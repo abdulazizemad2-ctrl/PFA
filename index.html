@@ -1,0 +1,206 @@
+<title>اختبار الإسعافات الأولية</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap">
+<style>
+/* layout: single column exam sheet; navy header band, question card, option rows like the paper exam */
+:root{
+  --bg:#F4F3F9; --surface:#FFFFFF; --ink:#14122B; --muted:#5E5A7A; --line:#DAD7EA;
+  --navy:#0B004F; --navy-ink:#FFFFFF; --soft:#EEEDF6;
+  --ok:#00A355; --ok-bg:#E6F8EE; --bad:#E5262B; --bad-bg:#FDECEC; --hi:#FFF176; --hi-ink:#14122B;
+  --flag:#E9A100;
+  --f-body:'Tajawal','Segoe UI',Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E0C22; --surface:#17153A; --ink:#ECEBF7; --muted:#A7A3C8; --line:#2E2A5A;
+  --navy:#2A1F9C; --navy-ink:#FFFFFF; --soft:#201D4A;
+  --ok:#2BD585; --ok-bg:#103326; --bad:#FF6B6E; --bad-bg:#3A1418; --hi:#5A5200; --hi-ink:#FFF7B0; --flag:#FFC23D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E0C22; --surface:#17153A; --ink:#ECEBF7; --muted:#A7A3C8; --line:#2E2A5A;
+  --navy:#2A1F9C; --navy-ink:#FFFFFF; --soft:#201D4A;
+  --ok:#2BD585; --ok-bg:#103326; --bad:#FF6B6E; --bad-bg:#3A1418; --hi:#5A5200; --hi-ink:#FFF7B0; --flag:#FFC23D; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.7;direction:rtl;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.band{background:var(--navy);color:var(--navy-ink);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:4px}
+header.band h1{margin:0;font-size:1.45rem;font-weight:800;text-wrap:balance}
+header.band p{margin:0;opacity:.85;font-size:.95rem}
+.ch{display:inline-flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ch span{background:rgba(255,255,255,.14);border-radius:99px;padding:1px 10px;font-size:.82rem}
+h2{font-size:1.1rem;margin:22px 0 10px;color:var(--ink)}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:right;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column;gap:2px}
+.mode b{font-size:1.02rem}.mode small{color:var(--muted);font-size:.86rem;line-height:1.5}
+.mode:hover,.mode:focus-visible{border-color:var(--navy);outline:none;box-shadow:0 0 0 2px var(--soft)}
+.mode:disabled{opacity:.5;cursor:not-allowed}
+.topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:4px 14px;font:inherit;font-size:.92rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 8px;flex-wrap:wrap}
+.bar .meta{color:var(--muted);font-size:.92rem;font-variant-numeric:tabular-nums}
+.timer{font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy)}
+:root[data-theme="dark"] .timer{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .timer{color:var(--ink)}}
+.timer.low{color:var(--bad)}
+.prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .25s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:12px}
+.qhead{background:var(--soft);padding:14px 16px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--line)}
+.qnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;font-weight:800;font-size:.9rem;font-variant-numeric:tabular-nums}
+.qtext{flex:1;min-width:0;font-weight:700;font-size:1.06rem}
+.tag{flex:none;font-size:.75rem;border-radius:99px;padding:1px 9px;font-weight:700;margin-top:4px}
+.tag.T{background:var(--navy);color:var(--navy-ink)}.tag.N{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok)}
+.topic{font-size:.8rem;color:var(--muted);font-weight:500;display:block;margin-bottom:2px}
+.opts{display:flex;flex-direction:column}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:right;background:transparent;border:0;border-bottom:1px solid var(--line);padding:12px 16px;font:inherit;color:inherit;cursor:pointer;width:100%}
+.opt:last-child{border-bottom:0}
+.opt .lt{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--navy);display:grid;place-items:center;font-weight:800;font-size:.85rem;color:var(--ink)}
+.opt:hover:not(:disabled){background:var(--soft)}
+.opt:focus-visible{outline:2px solid var(--navy);outline-offset:-2px}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--hi);color:var(--hi-ink);font-weight:700}
+.opt.ok .lt{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.bad{background:var(--bad-bg)}
+.opt.bad .lt{background:var(--bad);border-color:var(--bad);color:#fff}
+.fb{padding:10px 16px;font-weight:700;font-size:.95rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+.actions{display:flex;gap:8px;justify-content:space-between;margin-top:14px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 18px;cursor:pointer;border:1px solid var(--navy);background:var(--navy);color:var(--navy-ink)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.flag[aria-pressed="true"]{border-color:var(--flag);color:var(--flag)}
+.btn:focus-visible{outline:2px solid var(--flag);outline-offset:2px}
+.score{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
+.big{font-size:2.4rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
+:root[data-theme="dark"] .big{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .big{color:var(--ink)}}
+.rows{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.row{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.row .top{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:.95rem}
+.row .top span:last-child{font-variant-numeric:tabular-nums;color:var(--muted)}
+.meter{height:8px;background:var(--line);border-radius:99px;margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:99px}
+.empty{color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:14px;margin-top:10px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;margin-top:8px}
+.stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+a.link{color:inherit;font-weight:700}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="band">
+    <h1>تجميعات وأسئلة الـ MED لمادة مبادئ الإسعافات الأولية</h1>
+    <p>اختبار تفاعلي من ملخصات أبو عماد، مرتب حسب ترتيب الملخص.</p>
+    <div class="ch" id="counts"></div>
+  </header>
+  <main id="app"></main>
+  <footer>بجهود الطلاب وقنوات مجتمع الحقوق، وتنسيق ملخصات أبو عماد · <a class="link" href="https://t.me/molaksat_aboemad" target="_blank" rel="noopener">قناة ملخصات أبو عماد الرسمية</a></footer>
+</div>
+
+<script>
+const Q = [{"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "تعتبر الإسعافات الأولية عناية طبية أولية:", "o": ["متخصصة ودائمة تُقدَّم في المستشفى", "فورية ومؤقتة تُقدَّم إلى وقت وصول المساعدة الطبية", "لا تُقدَّم إلا من طبيب مختص", "تحتاج إلى معدات وتقنيات طبية عالية"], "a": 1}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "أي مما يلي من مبادئ وأساسيات الإسعافات الأولية؟", "o": ["حماية المصاب من الخطر بغض النظر عن سلامة المسعف", "الاستماع لأكبر عدد ممكن من الناس حول المصاب أو المريض", "معرفة جميع ظروف الحادث أو المرض", "تقديم الإسعافات الأولية لأي مصاب في مكان الحادث دون أي أولوية"], "a": 2}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "من خلال فهمك للإسعافات الأولية، أي من العبارات التالية تعتبر ذات أهمية لمقدمي الإسعافات الأولية؟", "o": ["يجب على المسعف عند الوصول لموقع الحادث نقل المريض أولاً", "يجب على المسعف ألا يتحدث قط مع الأشخاص المحيطين حتى لا يشتت انتباهه", "يجب أن يكون المسعف ملماً بجميع المعلومات الطبية المتخصصة الحديثة بشتى التخصصات", "يجب على المسعف ألا يتعامل مع المصاب بجروح بالغة بدون قفازات"], "a": 3}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "المسعف الأول هو:", "o": ["أول شخص يصل إلى الحالة الطارئة ويقدم الإسعاف قبل وصول الطبيب أو سيارة الإسعاف", "الطبيب المختص الذي يستقبل المصاب في المستشفى", "فني الخدمات الإسعافية الذي يصل بسيارة الإسعاف", "أي شخص يتواجد في موقع الحادث ولو لم يقدم أي مساعدة"], "a": 0}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "شخص لا يعرف العوم شاهد غريقاً، فحاول إنقاذه بنفسه. أي من شروط المسعف خالف هذا الشخص؟", "o": ["سرعة البديهة وحسن التصرف", "الثقة بالنفس والشجاعة", "عدم تعريض نفسه أو المصاب للخطر", "هدوء الأعصاب والاستعداد"], "a": 2}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "أي التالي يعتبر قاعدة ذهبية في الإسعافات الأولية؟", "o": ["القيام بعمل ضربة خفيفة على كتف المصاب", "سؤال المصاب عن اسمه", "تقييم موقع الحادث لمعرفة أسباب الحادث", "عدم تحريك المصاب إلا عند الضرورة"], "a": 3}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "عند الاتصال بالطوارئ، أي من المعلومات التالية لا تُطلب منك؟", "o": ["اسمك ومكان الحادث", "وقت حدوث الإصابة أو المرض", "عدد المصابين ووجود كبار سن أو أطفال", "فصيلة دم المصاب"], "a": 3}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "عند توثيق الرعاية المقدمة للمصاب (كتابة التقرير)، فإن العلامات الحيوية التي تُسجَّل هي:", "o": ["النبض ودرجة حرارة الجلد ولونه", "ضغط الدم ونسبة السكر", "فصيلة الدم والوزن", "الطول والعمر"], "a": 0}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "في حالة تقديم الإسعافات الأولية لعدة مصابين، يجب عليك أولاً:", "o": ["الاتصال بالإسعاف وانتظار المساعدة الطبية المتخصصة", "فحص المصابين جميعاً بشكل سريع وتقديم الأولوية", "إسعاف المصابين جميعاً بشكل عشوائي", "إسعاف المصابين الذين لديهم إصابات خفيفة"], "a": 1}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "عند تعدد المصابين، تُصنَّف الحالة التي يجب أن تُقدَّم لها الرعاية أولاً بأنها:", "o": ["عاجلة لكنها لا تشكل تهديداً لحياة المصاب", "ليست عاجلة", "تشكل تهديداً لحياة المصاب", "حالة يمكن تأجيلها حتى وصول الإسعاف"], "a": 2}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "ما هي المرحلة الأولى في نظام الخدمات الطبية الطارئة؟", "o": ["اكتشاف الحالة الإسعافية", "الاتصال المبكر بالخدمة الإسعافية", "الإسعافات الأولية", "الرعاية بالمستشفى"], "a": 0}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "من صفات المسعف أن يكون هادئاً وحسن التصرف، كيف يمكن للمسعف أن يحافظ على هدوئه عند إسعاف المصابين؟", "o": ["أن يتعامل مع أول مصاب يواجهه دون الكشف على المصابين الآخرين", "من خلال التعامل فقط مع الحالات البسيطة غير المعقدة", "الاتصال المبكر بالإسعاف دون مسح مكان الحادث", "من خلال التدريب المستمر على التصرف بأولوية"], "a": 3}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "أي من هذه لا يتبع للقواعد الأربعة في أولوية الرعاية (The 4 Rules)؟", "o": ["تحريك المصاب من موقع الحادث", "مسح موقع الحادث", "إجراء الكشف الأولي", "الاتصال بالإسعاف"], "a": 0}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "عند مسح موقع الحادث يجب إعطاء الأولوية لما يلي:", "o": ["سلامة المصاب أولاً", "تحريك المصاب من مكان الحادث", "سلامتك أولاً", "تحديد عدد المتواجدين في موقع الحادث"], "a": 2}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "ما هي الطريقة الصحيحة التي يجب على المسعف استخدامها للتحقق من درجة وعي المصاب؟", "o": ["ربت على كتفه بلطف والتحدث معه مباشرة", "مراقبة الجفون والشفتين من أجل الحركة الواضحة", "يقرص أذنه ويربت برفق على وجهه", "يصرخ بصوت عالٍ وينادي باسمه"], "a": 0}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "تعرض 3 من عمال البناء لسقوط لوح خشبي كبير عليهم في موقع عملهم، وبعد وصول المسعف لمكان الحادث بدأ المسعف بعمل مسح لموقع الحادث، برأيك ما هي الخطوة التالية؟", "o": ["إجراء التقييم المفصل للحالات", "انتظار الخدمة الإسعافية المتخصصة", "فحص استجابة المصابين وطلب الإسعاف", "البدء بالسيطرة على النزيف للمصابين ذوي الجروح"], "a": 2}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "إذا كان المصاب البالغ فاقداً للوعي وغير مستجيب، فماذا تفعل أولاً؟", "o": ["ابدأ الإنعاش القلبي الرئوي", "طلب الإسعاف 997", "افتح مجرى الهواء", "قم بإزالة الجسم الغريب إذا رأيته"], "a": 1}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "في حالة إسعاف مصاب فاقد للوعي ولا يتنفس فإن التالي هو أول إجراء يجب عليك فعله:", "o": ["البحث داخل الفم عن أي جسم عالق", "وضع المصاب في وضع الإفاقة", "طلب الإسعاف وعمل الضغطات الصدرية", "السيطرة على النزيف للحفاظ على نسبة الأكسجين في الدم"], "a": 2}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "إذا وجدت شخصاً فاقداً للوعي ويبدو أنه لا يتنفس، ولا يوجد نبض، أولويتك الأولى هي:", "o": ["البدء بالضغطات الصدرية", "فتح مجرى الهواء", "أعطِ تنفساً إنقاذياً من الفم إلى الفم", "التعامل مع أي إصابة أخرى"], "a": 0}, {"t": "مفهوم الإسعافات الأولية", "s": "T", "q": "يقوم المسعف بعمل الكشف الثانوي إذا تأكد من عدم وجود تهديد مباشر لحياة المصاب، الكشف الثانوي يساعد في الحصول على أي من المعلومات التالية؟", "o": ["درجة وعي المريض", "السيطرة على النزيف", "حالة مجرى الهواء", "معلومات تفصيلية عن المريض"], "a": 3}, {"t": "مفهوم الإسعافات الأولية", "s": "N", "q": "كم عدد المحتويات التي تمثل الحد الأدنى لحقيبة الإسعافات الأولية المثالية؟", "o": ["10 محتويات", "12 محتوى", "16 محتوى", "20 محتوى"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "ما هو معدل التنفس الطبيعي للإنسان؟", "o": ["8–10 أنفاس في الدقيقة", "12–20 نفساً في الدقيقة", "25–30 نفساً في الدقيقة", "60–100 نفس في الدقيقة"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "الموت الدماغي يحدث بعد انقطاع الأكسجين:", "o": ["أكثر من 5 دقائق", "أكثر من 4 دقائق", "أكثر من 20 دقيقة", "أكثر من 10 دقائق"], "a": 3}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "أي هذه الجمل تعتبر غير صحيحة؟", "o": ["الموت الدماغي يحدث بعد 4 دقائق من انقطاع الأكسجين", "لا يستطيع الدماغ تحمل انقطاع الأكسجين أكثر من 4 دقائق", "الموت السريري هو توقف القلب والتنفس", "الموت الدماغي يحدث بعد 10 دقائق من انقطاع الأكسجين"], "a": 0}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "أي من الأسباب التالية للاختناق تعتبر الأكثر شيوعاً بين فاقدي الوعي؟", "o": ["ابتلاع حبوب الدواء", "ابتلاع اللسان", "ابتلاع قطعة من الطعام", "ابتلاع النقود المعدنية"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "إذا حدث انسداد لمجرى الهواء بسبب جسم غريب لكن المصاب لا يزال يسعل ويوجد حشرجة في الصوت، فما الذي يعاني منه المصاب في هذه الحالة؟", "o": ["الغيبوبة", "انسداد كلي أو تام", "انسداد جزئي", "توقف التنفس"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "امرأة حامل تتحدث أثناء الطعام، فجأة توقفت عن الكلام وبدأت تسعل بقوة وبدأت تسمع صوت صفير عند تنفسها، فما هو الإسعاف الأولي الذي يتوجب عليك فعله في هذه الحالة؟", "o": ["لا تتدخل وشجعها على السعال", "اتصل بالإسعاف مباشرة", "ابدأ بعمل الإنعاش القلبي الرئوي مباشرة", "ابدأ مباشرة بعمل مناورة هيمليك"], "a": 0}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "عند إسعاف شخص مصاب بالاختناق يبلغ من العمر 25 سنة وما زال واعياً، ولكنه غير قادر على السعال، فماذا يتوجب عليك فعله؟", "o": ["اجعل المصاب في وضعية الإفاقة", "لا تتدخل وشجعه على السعال", "ابدأ بإعطاء 2 نفس للمريض", "ابدأ بمناورة هيمليك"], "a": 3}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "عند استخدام مناورة هيمليك لشخص مختنق، ماذا يجب على المسعف فعله أثناء عمل الدفعات البطنية حتى لا يسقط المصاب على الأرض عند فقدانه الوعي؟", "o": ["إسناد المصاب على الحائط ثم عمل الدفعات البطنية", "وضع إحدى ساقي المسعف بين ساقي المختنق من الخلف", "إعطاء الدفعات البطنية والمصاب مستلقٍ على ظهره", "الاستعانة بكرسي للضغط على البطن من أسفل لأعلى"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "امرأة حامل تمسك حنجرتها ولا تستطيع الكلام ولا السعال، أين يضع المسعف قبضته؟", "o": ["فوق السرة مباشرة", "على وسط الصدر", "بين لوحي الكتفين", "أسفل البطن"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "شخص بالغ واعٍ يعاني من الاختناق وهو لوحده، وفشل السعال في إخراج الجسم الغريب، ماذا يفعل؟", "o": ["يستلقي على ظهره وينتظر المساعدة", "يضرب ظهره بيده عدة مرات", "يضع قبضته فوق السرة وينحني على سطح صلب كالكرسي أو الطاولة", "يشرب الماء بكثرة"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "طفل يبلغ من العمر 7 سنوات، يأكل الحلوى فجأة بدأ يمسك حلقه ولا يستطيع التحدث وبدأ لون الجلد يميل للزرقة، والطفل يميل لفقدان الوعي. ماذا عليك أن تفعل الآن؟", "o": ["أعطه خمس ضربات ظهرية وخمس دفعات على الصدر", "أعطه نفساً إنقاذياً", "إمالة رأسه إلى الأسفل", "قم بعمل الضغطات البطنية (هيمليك) مع مراعاة طول الطفل"], "a": 3}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "ما هو عدد ضربات الظهر التي تعطى للطفل الرضيع المصاب بانسداد شديد في مجرى الهواء؟", "o": ["3", "4", "5", "6"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "عند إسعاف الرضيع المختنق، لماذا يجب أن يكون رأسه أسفل من مستوى الجذع؟", "o": ["لتسهيل عملية التنفس الإنقاذي", "لأن الجاذبية الأرضية تساعد على جذب الجسم الغريب لأسفل", "لتجنب فقدان الرضيع للوعي", "لتسهيل الضغط على البطن"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "عند تقديم الإنعاش القلبي الرئوي لشخص مختنق فاقد للوعي، فإنه من ضمن المعلومات الهامة التي يجب على المسعف معرفتها قبل إعطاء النفس؟", "o": ["وضع المصاب على الجانب الأيسر ثم إعطاء النفس", "عند إعطاء النفس الإنقاذي الأول يجب ملاحظة ارتفاع بطن المصاب", "افتح الفم وابحث عن الجسم الغريب وفي حال رؤيته فقط حاول إزالته", "ابحث عن الجسم الغريب بإصبعك في حال عدم رؤيته وحاول إخراجه"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "مصطلح (Cardio Pulmonary Resuscitation (CPR)) يعني؟", "o": ["الإنعاش القلبي المستدام", "الإنعاش الرئوي المستدام", "الإنعاش القلبي الرئوي", "الإنعاش القلبي الكلوي"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "أي مما يلي ليس من خطوات سلسلة إنقاذ الحياة للبالغين؟", "o": ["الاتصال المبكر على 997", "الإنعاش القلبي الرئوي", "استعمال جهاز الرجفان البطيني", "وضع المصاب في وضعية الإفاقة"], "a": 3}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "يجب أن يكون معدل الضغطات الصدرية .......... / دقيقة", "o": ["50", "75", "100", "200"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "كم يكون عمق الضغطات الصدرية عند إنعاش الشخص البالغ؟", "o": ["1.5–2.5 سم تقريباً", "2.5–4 سم تقريباً", "4–5 سم تقريباً", "6–8 سم تقريباً"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "\"هو وسيلة لتمرير الهواء إلى رئتي المصاب، يعتمد على هواء الزفير لدى المنقذ\" ما نسبة الأكسجين في هواء الزفير؟", "o": ["16%–18%", "21%", "30%", "5%–10%"], "a": 0}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "\"هو وسيلة لتمرير الهواء إلى رئتي المصاب الذي لديه توقف تنفس\" هذا تعريفاً مناسباً لـ..........؟", "o": ["التنفس الإجباري", "التنفس الصناعي", "التنفس الآلي", "التنفس الإنقاذي"], "a": 3}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "إذا عاد تنفس المصاب أو بدأ في الحركة أو السعال أثناء الإنعاش، فماذا تفعل؟", "o": ["تستمر في الضغطات الصدرية", "تضعه في وضعية الإفاقة", "تجعله يجلس على كرسي", "تعطيه ماء ليشرب"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "عند إنعاش طفل عمره 5 سنوات وكنت وحيداً، متى تطلب الإسعاف؟", "o": ["قبل البدء بالإنعاش مباشرة", "بعد البدء بالإنعاش لمدة دقيقتين", "بعد 10 دقائق من الإنعاش", "لا داعي لطلب الإسعاف"], "a": 1}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "N", "q": "عند إنعاش الرضيع (أقل من سنة)، بماذا يتم الضغط على الصدر؟", "o": ["بكلتا اليدين", "براحة يد واحدة", "بإصبعي إحدى اليدين (الوسطى والبنصر)", "بقبضة اليد"], "a": 2}, {"t": "الاختناق والإنعاش القلبي الرئوي", "s": "T", "q": "عند تقديم الإنعاش القلبي الرئوي لشخص فاقد للوعي، فإنه يجب عدم التوقف عن تقديم الإنعاش القلبي الرئوي لأكثر من..........", "o": ["5 ثوانٍ", "10 دقائق", "10 ثوانٍ", "5 دقائق"], "a": 2}, {"t": "التسمم", "s": "T", "q": "يعتبر أول أكسيد الكربون من الأشياء التي تؤدي إلى التسمم عن طريق:", "o": ["الابتلاع عن طريق الجهاز الهضمي", "الحقن داخل العضلات والأوعية الدموية", "الامتصاص عن طريق الجلد", "الاستنشاق"], "a": 3}, {"t": "التسمم", "s": "T", "q": "ما هو المنفذ الذي يدخل منه المواد السامة من الدهانات لجسم الإنسان؟", "o": ["الاستنشاق", "الجلد", "البلع", "الحقن"], "a": 1}, {"t": "التسمم", "s": "T", "q": "كل مما يلي يعتبر من الأسباب الشائعة لحالات التسمم فيما عدا:", "o": ["بقاء السموم في حاوياتها الأصلية", "إهمال الوالدين بترك المواد الخطرة في متناول الأطفال", "التخزين غير الصحيح للمواد السامة", "الرغبة في الانتحار"], "a": 0}, {"t": "التسمم", "s": "T", "q": "أي مما يلي يعتبر من القواعد العامة لإسعاف حالات التسمم؟", "o": ["البدء بإسعاف المصاب في مكان التسمم بالغازات", "التخلص من قيء المصاب قبل الوصول إلى المستشفى", "التخلص من السم ووعائه قبل الوصول إلى المستشفى", "معرفة ما إذا كان التسمم عن عمد أم خطأ"], "a": 3}, {"t": "التسمم", "s": "T", "q": "ما هي أهم المعلومات التي يجب جمعها في حالة ابتلاع شخص مادة سامة؟", "o": ["تحديد مكان التعاطي ومن أعطاه", "تحديد وقت وسبب التعاطي", "تحديد عمر المتعاطي وجنسه", "تحديد نوع المادة وكميتها ووقت التعاطي"], "a": 3}, {"t": "التسمم", "s": "T", "q": "عندما يصاب شخص بالتسمم، ماذا يجب على المسعف الاتصال به أولاً؟", "o": ["الصيدلية المحلية", "طبيب المصاب", "قسم الطوارئ بالمستشفى", "مركز مراقبة السموم"], "a": 3}, {"t": "التسمم", "s": "T", "q": "أي من الأعراض التالية تؤكد ابتلاع أحماض مركزة أو منظفات؟", "o": ["سعال وضيق بالتنفس", "حروق بالفم وألم بالبلعوم", "صداع وآلام في العضلات", "إسهال وتشنجات"], "a": 1}, {"t": "التسمم", "s": "T", "q": "ما الذي لا يعتبر من ضمن أعراض التسمم المعوية؟", "o": ["الغثيان", "التقيؤ", "آلام البطن", "الحكة"], "a": 3}, {"t": "التسمم", "s": "T", "q": "من الإسعافات الأولية عند بلع المواد الكيماوية والمنظفات المنزلية:", "o": ["إعطاء مشروبات دافئة", "عدم إحداث قيء للمصاب", "عمل غسيل معدة", "إعطاء أحماض مثل الخل والليمون"], "a": 1}, {"t": "التسمم", "s": "T", "q": "أي من العبارات التالية تصف الإسعافات الأولية عند بلع المواد الكيماوية أو المنظفات المنزلية؟", "o": ["إحداث قيء صناعي سريعاً", "إعطاء لبن وبياض بيضة", "غسيل المعدة في أسرع وقت ممكن", "إعطاء خل وعصير ليمون"], "a": 1}, {"t": "التسمم", "s": "T", "q": "أي من العبارات التالية تصف الإسعافات الأولية عند بلع المنظفات المنزلية مثل الفلاش؟", "o": ["يمنع إعطاء خل وعصير ليمون", "غسيل المعدة في أسرع وقت ممكن", "إحداث قيء صناعي سريعاً", "يمنع إعطاء لبن وبياض بيضة"], "a": 0}, {"t": "التسمم", "s": "T", "q": "من طرق معالجة حالات التسمم بالمنظفات المنزلية:", "o": ["محاولة تحريض المريض على التقيؤ", "وضع المريض في وضع الإفاقة دائماً", "إنعاش المريض في حال توقف التنفس", "مسح جبهة المريض بالماء والصابون"], "a": 2}, {"t": "التسمم", "s": "N", "q": "يعتبر غاز ثاني أكسيد الكربون من الغازات:", "o": ["السامة", "الخانقة", "المهيجة", "غير الضارة"], "a": 1}, {"t": "التسمم", "s": "N", "q": "غاز الأمونيا وغاز الكلور ومصدرهما البالوعات العامة والقمامة، يعتبران من الغازات:", "o": ["المهيجة", "الخانقة", "السامة", "الخاملة"], "a": 0}, {"t": "التسمم", "s": "N", "q": "عند إسعاف شخص تسمم عن طريق استنشاق الغاز، ما هي أول خطوة يجب عليك فعلها؟", "o": ["الاتصال بالرقم 997", "نقل المصاب فوراً إلى هواء نقي", "التأكد أن المكان آمن لتأمين سلامتك أولاً", "فك أربطة العنق والملابس الضاغطة"], "a": 2}, {"t": "التسمم", "s": "T", "q": "ما هي أولوياتك لإسعاف طفل عمره 10 سنوات سقط على ساقه مادة كيميائية؟", "o": ["تغطية المنطقة المحروقة", "تغطية المنطقة المحترقة بمادة دهنية", "غسل الجلد بتيار من الماء المتدفق", "تهدئة الطفل"], "a": 2}, {"t": "التسمم", "s": "N", "q": "عند التسمم عن طريق الجلد، تُغسل المنطقة المصابة بالماء الغزير المتدفق لمدة:", "o": ["5 دقائق", "10 دقائق", "20 دقيقة", "30 دقيقة"], "a": 1}, {"t": "التسمم", "s": "N", "q": "أي مما يلي يُمنع عند إسعاف التسمم عن طريق العين؟", "o": ["فتح الجفنين باليد", "وضع العين تحت الماء الجاري الدافئ", "استعمال أي نوع من قطرات العين", "نقل المصاب لأقرب مستشفى"], "a": 2}, {"t": "التسمم", "s": "N", "q": "عند التسمم عن طريق العين، توضع العين تحت الماء الجاري لمدة:", "o": ["5 دقائق", "10 دقائق", "15 دقيقة", "20 دقيقة على الأقل"], "a": 3}, {"t": "التسمم", "s": "T", "q": "ما هي أعراض عضات الأفاعي ولدغات العقارب؟", "o": ["شعور ضيق في الصدر والحلق", "طفح جلدي والأرتكاريا", "تورم في الوجه واللسان", "زوغان البصر وضعف العضلات"], "a": 3}, {"t": "التسمم", "s": "T", "q": "فتاة في إحدى محطات الاستراحة تعرضت للدغة ثعبان، ما هو الإسعاف الأولي المناسب لها؟", "o": ["ضع ثلجاً على الجرح واتجه إلى أقرب مركز طوارئ أو مستشفى", "قم بقطع وتشريط مكان الإصابة وامتصاص السم والتخلص منه", "ارفع المنطقة المصابة أعلى من مستوى القلب وضع كيساً من الثلج", "اغسل الجرح مع إبقاء المنطقة المصابة أخفض من مستوى القلب"], "a": 3}, {"t": "التسمم", "s": "N", "q": "أي مما يلي من الممارسات الخاطئة في إسعاف لدغات الثعبان؟", "o": ["جعل المصاب يستلقي على ظهره دون حركة", "مسح موضع اللدغة بالماء والصابون", "إعطاء المصاب مشروبات تحتوي على الكافيين", "استخدام رباط مطاطي عريض غير مشدود"], "a": 2}, {"t": "التسمم", "s": "N", "q": "أي مما يلي يعتبر من طرق الوقاية لمنع حوادث التسمم؟", "o": ["إعطاء الدواء للطفل على أنه حلوى", "عدم إعطاء أي دواء في الظلام", "الاحتفاظ بالأدوية منتهية الصلاحية", "تخزين المنظفات في عبوات المشروبات"], "a": 1}];
+const LETTERS = ['أ','ب','ج','د'];
+const TOPICS = [...new Set(Q.map(q=>q.t))];
+const store = {
+  get(k,d){try{const v=localStorage.getItem('fa_'+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('fa_'+k,JSON.stringify(v))}catch(e){}}
+};
+let flagged = new Set(store.get('flagged',[]));
+let wrong = new Set(store.get('wrong',[]));
+let selTopics = new Set(TOPICS);
+let S = null, timerId = null;
+const app = document.getElementById('app');
+const h = (s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const nT = Q.filter(q=>q.s==='T').length;
+document.getElementById('counts').innerHTML = `<span>${Q.length} سؤالاً</span><span>${nT} من التجميعات</span><span>${Q.length-nT} جديد</span>`;
+
+function home(){
+  clearInterval(timerId); S=null;
+  const tchips = TOPICS.map((t,i)=>`<button class="chip" id="tp${i}" aria-pressed="${selTopics.has(t)}" data-t="${h(t)}">${h(t)}</button>`).join('');
+  app.innerHTML = `
+  <h2>اختر نوع الاختبار</h2>
+  <div class="modes">
+    <button class="mode" id="m-full"><b>اختبار شامل</b><small>كل الأسئلة (${Q.length}) بترتيب الملخص، مع النتيجة لكل محاضرة.</small></button>
+    <button class="mode" id="m-quick"><b>اختبار سريع بمؤقت</b><small>20 سؤالاً عشوائياً في 15 دقيقة.</small></button>
+    <button class="mode" id="m-topic"><b>حسب الموضوع</b><small>أسئلة المحاضرات التي تختارها من القائمة تحت.</small></button>
+    <button class="mode" id="m-wrong" ${wrong.size?'':'disabled'}><b>مراجعة الأخطاء</b><small>${wrong.size?`${wrong.size} سؤالاً أخطأت فيها سابقاً.`:'لا توجد أخطاء محفوظة بعد.'}</small></button>
+    <button class="mode" id="m-flag" ${flagged.size?'':'disabled'}><b>الأسئلة المعلّمة</b><small>${flagged.size?`${flagged.size} سؤالاً علّمتها للمراجعة.`:'علّم أي سؤال أثناء الحل ليظهر هنا.'}</small></button>
+  </div>
+  <h2>المحاضرات</h2>
+  <div class="topics">${tchips}</div>
+  <div class="stats"><span>من التجميعات: <b>${nT}</b></span><span>جديد: <b>${Q.length-nT}</b></span></div>`;
+  app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const t=b.dataset.t; selTopics.has(t)?selTopics.delete(t):selTopics.add(t); if(!selTopics.size) selTopics.add(t); home();});
+  const idx = Q.map((_,i)=>i);
+  document.getElementById('m-full').onclick=()=>start('شامل',idx);
+  document.getElementById('m-quick').onclick=()=>start('سريع',shuffle(idx).slice(0,20),15*60);
+  document.getElementById('m-topic').onclick=()=>start('حسب الموضوع',idx.filter(i=>selTopics.has(Q[i].t)));
+  document.getElementById('m-wrong').onclick=()=>start('مراجعة الأخطاء',idx.filter(i=>wrong.has(i)));
+  document.getElementById('m-flag').onclick=()=>start('الأسئلة المعلّمة',idx.filter(i=>flagged.has(i)));
+}
+
+function start(name, list, secs){
+  if(!list.length) return;
+  S = {name, list, pos:0, ans:{}, secs, left:secs};
+  clearInterval(timerId);
+  if(secs){ timerId=setInterval(()=>{S.left--; const el=document.getElementById('timer'); if(el){el.textContent=fmt(S.left); el.classList.toggle('low',S.left<=60)} if(S.left<=0){clearInterval(timerId); result();}},1000); }
+  render();
+}
+const fmt = s=>`${String(Math.floor(Math.max(s,0)/60)).padStart(2,'0')}:${String(Math.max(s,0)%60).padStart(2,'0')}`;
+
+function render(){
+  const i = S.list[S.pos], q = Q[i], a = S.ans[i];
+  const done = Object.keys(S.ans).length;
+  const opts = q.o.map((o,k)=>{
+    let c=''; if(a!==undefined){ if(k===q.a) c='ok'; else if(k===a) c='bad'; }
+    return `<button class="opt ${c}" id="op${k}" data-k="${k}" ${a!==undefined?'disabled':''}><span class="lt">${LETTERS[k]}</span><span>${h(o)}</span></button>`;
+  }).join('');
+  const fb = a===undefined?'':(a===q.a?`<div class="fb ok">إجابة صحيحة.</div>`:`<div class="fb bad">إجابة خاطئة، الصحيحة: (${LETTERS[q.a]}) ${h(q.o[q.a])}</div>`);
+  app.innerHTML = `
+  <div class="bar"><span class="meta">${h(S.name)} · السؤال ${S.pos+1} من ${S.list.length} · أُجيب ${done}</span>${S.secs?`<span class="timer" id="timer">${fmt(S.left)}</span>`:''}</div>
+  <div class="prog"><i style="width:${(done/S.list.length)*100}%"></i></div>
+  <div class="card">
+    <div class="qhead"><span class="qnum">${i+1}</span><span class="qtext"><span class="topic">${h(q.t)}</span>${h(q.q)}</span><span class="tag ${q.s}">${q.s==='T'?'تجميعات':'جديد'}</span></div>
+    <div class="opts">${opts}</div>${fb}
+  </div>
+  <div class="actions">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" id="prev" ${S.pos?'':'disabled'}>السابق</button>
+      <button class="btn" id="next">${S.pos===S.list.length-1?'إنهاء وعرض النتيجة':'التالي'}</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost flag" id="flag" aria-pressed="${flagged.has(i)}">${flagged.has(i)?'معلّم للمراجعة':'علّم للمراجعة'}</button>
+      <button class="btn ghost" id="quit">إنهاء</button>
+    </div>
+  </div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.k; S.ans[i]=k;
+    if(k===q.a) wrong.delete(i); else wrong.add(i);
+    store.set('wrong',[...wrong]); render();
+  });
+  document.getElementById('prev').onclick=()=>{S.pos--;render()};
+  document.getElementById('next').onclick=()=>{ if(S.pos===S.list.length-1) result(); else {S.pos++;render()} };
+  document.getElementById('flag').onclick=()=>{flagged.has(i)?flagged.delete(i):flagged.add(i); store.set('flagged',[...flagged]); render()};
+  document.getElementById('quit').onclick=result;
+}
+
+function result(){
+  clearInterval(timerId);
+  const L = S.list; let ok=0, ans=0; const per={};
+  L.forEach(i=>{const t=Q[i].t; per[t]=per[t]||{ok:0,n:0}; per[t].n++; if(S.ans[i]!==undefined){ans++; if(S.ans[i]===Q[i].a){ok++; per[t].ok++}}});
+  const pct = Math.round(ok/L.length*100);
+  const rows = Object.entries(per).map(([t,v])=>{const p=Math.round(v.ok/v.n*100); const col=p>=80?'var(--ok)':p>=50?'var(--flag)':'var(--bad)';
+    return `<div class="row"><div class="top"><span>${h(t)}</span><span>${v.ok} من ${v.n}</span></div><div class="meter"><i style="width:${p}%;background:${col}"></i></div></div>`}).join('');
+  const missed = L.filter(i=>S.ans[i]!==Q[i].a);
+  const list = missed.length? missed.map(i=>`<div class="row"><div style="font-weight:700">${i+1}. ${h(Q[i].q)}</div><div style="margin-top:4px">الصحيحة: <b>(${LETTERS[Q[i].a]}) ${h(Q[i].o[Q[i].a])}</b>${S.ans[i]!==undefined?` · إجابتك: (${LETTERS[S.ans[i]]}) ${h(Q[i].o[S.ans[i]])}`:' · لم تُجب'}</div></div>`).join('') : `<div class="empty">لا توجد أخطاء في هذه المحاولة.</div>`;
+  app.innerHTML = `
+  <div class="score"><div class="big">${pct}%</div><div><b>${ok} صحيحة من ${L.length}</b><div class="stats"><span>أُجيب: <b>${ans}</b></span><span>لم يُجب: <b>${L.length-ans}</b></span>${S.secs?`<span>الوقت المتبقي: <b>${fmt(S.left)}</b></span>`:''}</div></div></div>
+  <h2>النتيجة لكل محاضرة</h2><div class="rows">${rows}</div>
+  <h2>الأسئلة التي تحتاج مراجعة</h2><div class="rows">${list}</div>
+  <div class="actions"><button class="btn" id="again">إعادة المحاولة</button><button class="btn ghost" id="back">العودة لأنواع الاختبار</button></div>`;
+  const last=S;
+  document.getElementById('again').onclick=()=>start(last.name,last.secs?shuffle(Q.map((_,i)=>i)).slice(0,20):last.list,last.secs);
+  document.getElementById('back').onclick=home;
+}
+home();
+</script>
